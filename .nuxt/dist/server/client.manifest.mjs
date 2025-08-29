@@ -1,0 +1,1 @@
+export { default } from "file:///Users/preetikushwaha/Documents/ADI_Vue3_Nuxt3_Pinia/nuxt-vue-pinia-app/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"

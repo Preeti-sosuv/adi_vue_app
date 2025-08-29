@@ -1,0 +1,22 @@
+{
+  "name": "nuxt-vue-pinia-app",
+  "version": "1.0.0",
+  "description": "A Nuxt 3 application using Vue 3 and Pinia for state management.",
+  "author": "Your Name",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "start": "nuxt start"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.11.2",
+    "axios": "^1.11.0",
+    "nuxt": "^4.0.3",
+    "pinia": "^3.0.3",
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.0"
+  }
+}
