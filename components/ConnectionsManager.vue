@@ -211,6 +211,16 @@
         <p>Loading connections...</p>
       </div>
     </div>
+
+
+    <!-- Create/Edit Connection Modal -->
+    <CreateConnectionModal
+      :isOpen="showConnectionModal"
+      :action="modalAction"
+      :connectionData="selectedConnection"
+      @close="closeConnectionModal"
+      @saved="onConnectionSaved"
+    />
   </div>
 </template>
 
@@ -265,6 +275,11 @@ const pageSize = ref(10);
 // Sorting state
 const sortField = ref<keyof Connection>('connection_id');
 const sortDirection = ref<'asc' | 'desc'>('asc');
+
+// Modal state
+const showConnectionModal = ref(false);
+const modalAction = ref<'new' | 'edit' | 'copy'>('new');
+const selectedConnection = ref<Connection | null>(null);
 
 // API Constants
 const API_BASE_URL = 'http://34.69.208.233:8040/proxy';
@@ -483,21 +498,83 @@ const getStatusClass = (status: string) => {
 };
 
 const handleAddConnection = () => {
-  emit('addConnection');
+  console.log('Add connection clicked');
+  modalAction.value = 'new';
+  selectedConnection.value = null;
+  showConnectionModal.value = true;
+  console.log('Modal state:', showConnectionModal.value);
 };
 
 const handleEditConnection = (connection: Connection) => {
-  emit('editConnection', connection);
+  modalAction.value = 'edit';
+  selectedConnection.value = connection;
+  showConnectionModal.value = true;
 };
 
 const handleCopyConnection = (connection: Connection) => {
-  emit('copyConnection', connection);
+  modalAction.value = 'copy';
+  selectedConnection.value = connection;
+  showConnectionModal.value = true;
 };
 
-const handleDeleteConnection = (connection: Connection) => {
+const handleDeleteConnection = async (connection: Connection) => {
   if (confirm(`Confirm Delete Connection '${connection.connection_id}' ?`)) {
-    emit('deleteConnection', connection);
+    try {
+      loading.value = true;
+      const token = getToken();
+      
+      // This would be replaced with actual API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Remove from local list
+      const index = connections.value.findIndex(conn => conn.id === connection.id);
+      if (index !== -1) {
+        connections.value.splice(index, 1);
+      }
+      
+      alert(`Deleted Connection '${connection.connection_id}'`);
+    } catch (err) {
+      console.error('Failed to delete connection:', err);
+      alert('Failed to delete connection');
+    } finally {
+      loading.value = false;
+    }
   }
+};
+
+const closeConnectionModal = () => {
+  showConnectionModal.value = false;
+  selectedConnection.value = null;
+};
+
+const onConnectionSaved = (connectionData: any) => {
+  // Add or update connection in the list
+  const existingIndex = connections.value.findIndex(conn => conn.connection_id === connectionData.connection_id);
+  
+  if (existingIndex !== -1) {
+    // Update existing
+    connections.value[existingIndex] = {
+      ...connections.value[existingIndex],
+      ...connectionData
+    };
+  } else {
+    // Add new
+    const newConnection: Connection = {
+      id: `conn_${Date.now()}`,
+      connection_id: connectionData.connection_id,
+      connection_tech: connectionData.connection_tech,
+      connection_desc: connectionData.connection_desc,
+      org_id: 'All',
+      dept_id: 'All',
+      status: connectionData.status || 'ACTIVE',
+      connection_data: connectionData.connection_data
+    };
+    connections.value.push(newConnection);
+  }
+  
+  // Show success message
+  const action = modalAction.value === 'edit' ? 'Updated' : 'Created new';
+  alert(`${action} Connection '${connectionData.connection_id}'`);
 };
 
 const closeModal = () => {
@@ -530,11 +607,11 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 1000;
 }
 
 .connections-modal {

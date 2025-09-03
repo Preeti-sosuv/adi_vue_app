@@ -156,10 +156,6 @@
     <ConnectionsManager
       :isVisible="showConnectionsModal"
       @close="showConnectionsModal = false"
-      @addConnection="handleAddConnection"
-      @editConnection="handleEditConnection"
-      @copyConnection="handleCopyConnection"
-      @deleteConnection="handleDeleteConnection"
     />
       </div>
     </div>
@@ -329,29 +325,6 @@ function handleSidebarNavigation(item: string) {
   // Add other navigation handlers here as needed
 }
 
-function handleAddConnection() {
-  console.log('Add connection requested');
-  // TODO: Implement add connection functionality
-  alert('Add Connection functionality - To be implemented');
-}
-
-function handleEditConnection(connection: any) {
-  console.log('Edit connection requested:', connection);
-  // TODO: Implement edit connection functionality
-  alert(`Edit Connection: ${connection.connection_id} - To be implemented`);
-}
-
-function handleCopyConnection(connection: any) {
-  console.log('Copy connection requested:', connection);
-  // TODO: Implement copy connection functionality
-  alert(`Copy Connection: ${connection.connection_id} - To be implemented`);
-}
-
-function handleDeleteConnection(connection: any) {
-  console.log('Delete connection requested:', connection);
-  // TODO: Implement delete connection functionality
-  alert(`Delete Connection: ${connection.connection_id} - To be implemented`);
-}
 
 
 function handleLogout() {
