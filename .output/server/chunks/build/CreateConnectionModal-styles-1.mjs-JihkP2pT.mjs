@@ -1,0 +1,4 @@
+const CreateConnectionModal_vue_vue_type_style_index_0_scoped_719943c9_lang = ".connection-modal-overlay[data-v-719943c9]{align-items:center;background:#00000080;display:flex;justify-content:center;inset:0;padding:16px;position:fixed;z-index:99999}.connection-modal-content[data-v-719943c9]{background:var(--surface-container,#fff);border:1px solid var(--outline-variant,#e0e0e0);border-radius:12px;box-shadow:0 20px 25px -5px #0000001a,0 10px 10px -5px #0000000a;color:var(--on-surface,#1f1f1f);max-height:90vh;max-width:48rem;overflow-y:auto;position:relative;width:100%}@media (max-width:768px){.connection-modal-overlay[data-v-719943c9]{padding:8px}.connection-modal-content[data-v-719943c9]{border-radius:8px;max-height:95vh;max-width:100%}}";
+
+export { CreateConnectionModal_vue_vue_type_style_index_0_scoped_719943c9_lang as C };
+//# sourceMappingURL=CreateConnectionModal-styles-1.mjs-JihkP2pT.mjs.map

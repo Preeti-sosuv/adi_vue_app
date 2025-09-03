@@ -1,11 +1,11 @@
 const client_manifest = {
-  "_D0YluHWh.js": {
+  "_CjynQk28.js": {
     "resourceType": "script",
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "D0YluHWh.js",
-    "name": "favicon",
+    "file": "CjynQk28.js",
+    "name": "auth",
     "imports": [
       "node_modules/nuxt/dist/app/entry.js"
     ],
@@ -31,7 +31,7 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "BEed1FIx.js",
+    "file": "CPO3f8Rp.js",
     "name": "error-404",
     "src": "node_modules/nuxt/dist/app/components/error-404.vue",
     "isDynamicEntry": true,
@@ -51,7 +51,7 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "vpcZqnap.js",
+    "file": "CMGKa2Y1.js",
     "name": "error-500",
     "src": "node_modules/nuxt/dist/app/components/error-500.vue",
     "isDynamicEntry": true,
@@ -71,7 +71,7 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "PKF83yCI.js",
+    "file": "Bdd08vsM.js",
     "name": "entry",
     "src": "node_modules/nuxt/dist/app/entry.js",
     "isEntry": true,
@@ -94,18 +94,18 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "BZ1uSARM.js",
+    "file": "Dar-_dNr.js",
     "name": "index",
     "src": "pages/index.vue",
     "isDynamicEntry": true,
     "imports": [
-      "node_modules/nuxt/dist/app/entry.js",
-      "_D0YluHWh.js"
+      "_CjynQk28.js",
+      "node_modules/nuxt/dist/app/entry.js"
     ],
     "css": []
   },
-  "index.DZKCSokh.css": {
-    "file": "index.DZKCSokh.css",
+  "index.CkUQXaQU.css": {
+    "file": "index.CkUQXaQU.css",
     "resourceType": "style",
     "prefetch": true,
     "preload": true
@@ -115,13 +115,13 @@ const client_manifest = {
     "module": true,
     "prefetch": true,
     "preload": true,
-    "file": "CvsHYRYP.js",
+    "file": "BUG3xlP1.js",
     "name": "login",
     "src": "pages/login.vue",
     "isDynamicEntry": true,
     "imports": [
       "node_modules/nuxt/dist/app/entry.js",
-      "_D0YluHWh.js"
+      "_CjynQk28.js"
     ],
     "css": [
       "login.CdNbt9z3.css"
