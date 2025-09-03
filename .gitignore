@@ -1,3 +1,14 @@
-node_modules
-.nuxt
+# Dependencies
+node_modules/
+
+# Nuxt build directories
+.nuxt/
+.output/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE files
 CLAUDE.md
