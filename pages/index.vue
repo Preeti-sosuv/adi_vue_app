@@ -1,7 +1,8 @@
 <template>
-  <div class="app-layout">
-    <Sidebar v-if="showSidebar" @close="showSidebar = false" @navigate="handleSidebarNavigation" />
-    <div class="main-content" :class="{ 'sidebar-open': showSidebar }">
+  <div class="app-container">
+    <div class="app-layout" :class="{ 'artifact-open': isArtifactOpen }">
+      <Sidebar v-if="showSidebar" @close="showSidebar = false" @navigate="handleSidebarNavigation" />
+      <div class="main-content" :class="{ 'sidebar-open': showSidebar, 'artifact-open': isArtifactOpen }">
       <button class="menu-toggle" @click="showSidebar = true" v-if="!showSidebar">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <line x1="3" y1="6" x2="21" y2="6"/>
@@ -9,6 +10,8 @@
           <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </button>
+      
+            
       <div class="container" :class="{ 'chat-mode': chatStore.isChatMode }">
     <div v-if="!chatStore.isChatMode" class="header">
       <div class="ai-icon">
@@ -44,7 +47,7 @@
               </svg>
             </button>
           </div>
-          <ChatResponse v-else :content="message.content" :loading="message.loading" />
+          <ChatResponse v-else :content="message.content" :loading="message.loading" :user-query="message.userQuery" />
         </div>
       </div>
       
@@ -157,13 +160,27 @@
       :isVisible="showConnectionsModal"
       @close="showConnectionsModal = false"
     />
+        </div>
       </div>
+    </div>
+    
+    <!-- Artifact Panel Container -->
+    <div v-show="isArtifactOpen" class="artifact-container" ref="artifactContainer">
+      <ArtifactPanel
+        :is-open="isArtifactOpen"
+        :title="currentArtifact.title"
+        :help-content="currentArtifact.helpContent"
+        :connection-id="currentArtifact.connectionId"
+        :dataset-id="currentArtifact.datasetId"
+        :sql="currentArtifact.sql"
+        @close="closeArtifactPanel"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, provide, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRuntimeConfig } from 'nuxt/app'
 import { useChatStore } from '../stores/chat'
@@ -171,9 +188,45 @@ import { useModelSelectionStore } from '../stores/modelSelection'
 import { usePopoverStore } from '../stores/popover'
 import { usePromptListStore } from '../stores/promptList'
 import { useAuthStore } from '../stores/auth';
+import { useArtifactPanel } from '../composables/useArtifactPanel';
+import ArtifactPanel from '../components/ArtifactPanel.vue';
 
 const inputText = ref('');
 const showSidebar = ref(false);
+
+// Artifact panel state  
+const artifactPanel = useArtifactPanel();
+const isArtifactOpen = artifactPanel.isOpen;
+const closePanel = artifactPanel.closePanel;
+const openHelpViewer = artifactPanel.openHelpViewer;
+const currentArtifact = artifactPanel.currentArtifact;
+const artifactContainer = ref<HTMLElement | null>(null);
+
+const closeArtifactPanel = () => {
+  closePanel();
+};
+
+// Test function to debug artifact panel
+const testArtifactPanel = () => {
+  console.log('Test button clicked, current isOpen:', isArtifactOpen.value);
+  openHelpViewer('# Test Content\n\nThis is a test to see if the artifact panel works.', 'Test Panel');
+  console.log('After openHelpViewer, isOpen:', isArtifactOpen.value);
+};
+
+// Watch for artifact panel opening to set initial width
+watch(isArtifactOpen, async (isOpen) => {
+  if (isOpen) {
+    // Wait for next tick to ensure DOM is updated
+    await nextTick();
+    if (artifactContainer.value) {
+      // Set initial width
+      artifactContainer.value.style.width = '600px';
+      console.log('Artifact container initialized with width 600px');
+    } else {
+      console.log('Artifact container not found');
+    }
+  }
+});
 const showUploadModal = ref(false);
 const showClassificationModal = ref(false);
 const showConnectionsModal = ref(false);
@@ -457,21 +510,45 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.app-layout {
+.app-container {
   display: flex;
   height: 100vh;
   background: var(--background);
+}
+
+.app-layout {
+  display: flex;
+  flex: 1;
+  min-width: 0; /* Allow flex item to shrink below content size */
+  transition: all 0.3s ease;
+}
+
+.app-layout.artifact-open {
+  /* Layout will automatically adjust when artifact container is present */
+}
+
+.artifact-container {
+  background: white;
+  border-left: 1px solid #e5e7eb;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+  min-width: 400px;
+  max-width: 80vw;
+  flex-shrink: 0;
 }
 
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, margin-right 0.3s ease;
 }
 
 .main-content.sidebar-open {
   margin-left: 90px;
+}
+
+.main-content.artifact-open {
+  margin-right: 410px; /* Account for min-width + border + shadow + padding */
 }
 
 .mobile-menu-btn {

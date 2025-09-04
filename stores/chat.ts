@@ -11,6 +11,7 @@ export interface ChatMessage {
   loading?: boolean;
   timestamp: Date;
   bookmarked?: boolean;
+  userQuery?: string; // Store the user query that triggered this AI response
 }
 
 export const useChatStore = defineStore('chat', () => {
@@ -61,14 +62,15 @@ export const useChatStore = defineStore('chat', () => {
   };
 
   // Add AI message
-  const addAIMessage = (content: string, loading = false): string => {
+  const addAIMessage = (content: string, loading = false, userQuery?: string): string => {
     const messageId = generateMessageId();
     messages.value.push({
       id: messageId,
       type: 'ai',
       content,
       loading,
-      timestamp: new Date()
+      timestamp: new Date(),
+      userQuery
     });
     return messageId;
   };
@@ -136,12 +138,12 @@ export const useChatStore = defineStore('chat', () => {
   };
 
   // Handle help request
-  const handleHelpRequest = async (): Promise<void> => {
+  const handleHelpRequest = async (userInput: string): Promise<void> => {
     isLoading.value = true;
     error.value = null;
 
-    // Add loading message
-    const loadingMessageId = addAIMessage('', true);
+    // Add loading message with userQuery
+    const loadingMessageId = addAIMessage('', true, userInput);
 
     try {
       const response = await fetch('http://34.69.208.233:8040/proxy/get_ai_help', {
@@ -160,12 +162,12 @@ export const useChatStore = defineStore('chat', () => {
       
       // Remove loading message and add actual response
       removeMessage(loadingMessageId);
-      addAIMessage(data);
+      addAIMessage(data, false, userInput);
     } catch (err) {
       // Remove loading message and add error
       removeMessage(loadingMessageId);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      addAIMessage('Sorry, I encountered an error while fetching help information. Please try again.');
+      addAIMessage('Sorry, I encountered an error while fetching help information. Please try again.', false, userInput);
       error.value = errorMessage;
     } finally {
       isLoading.value = false;
@@ -179,7 +181,7 @@ export const useChatStore = defineStore('chat', () => {
 
     // Check if user typed "help"
     if (userInput.toLowerCase().trim() === 'help') {
-      await handleHelpRequest();
+      await handleHelpRequest(userInput);
     } else {
       // Handle async query
       await handleAsyncQuery(userInput);
@@ -204,7 +206,7 @@ export const useChatStore = defineStore('chat', () => {
     showStreamingStatus.value = true;
 
     // Add loading AI message
-    const loadingMessageId = addAIMessage('', true);
+    const loadingMessageId = addAIMessage('', true, question);
 
     try {
       // Get auth store and token
@@ -290,7 +292,7 @@ export const useChatStore = defineStore('chat', () => {
           isRequestCompleted.value = true;
           stopPolling();
           removeMessage(loadingMessageId);
-          addAIMessage('Request timed out. Please try again.');
+          addAIMessage('Request timed out. Please try again.', false, question);
         }
       }, 120000); // 2 minutes timeout
 
@@ -299,7 +301,7 @@ export const useChatStore = defineStore('chat', () => {
       stopPolling();
       removeMessage(loadingMessageId);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      addAIMessage('Sorry, I encountered an error processing your request. Please try again.');
+      addAIMessage('Sorry, I encountered an error processing your request. Please try again.', false, question);
       error.value = errorMessage;
     }
   };
@@ -591,12 +593,12 @@ export const useChatStore = defineStore('chat', () => {
         } else {
           // Last fallback
           removeMessage(loadingMessageId);
-          addAIMessage('No response received from the AI model.');
+          addAIMessage('No response received from the AI model.', false);
         }
       } else {
         console.error('Failed to get final result:', taskResultResponse.status);
         removeMessage(loadingMessageId);
-        addAIMessage('Failed to retrieve the AI response.');
+        addAIMessage('Failed to retrieve the AI response.', false);
       }
     } catch (error) {
       console.error('Error getting final result:', error);
@@ -606,7 +608,7 @@ export const useChatStore = defineStore('chat', () => {
         updateMessage(loadingMessageId, currentMessage.content, false);
       } else {
         removeMessage(loadingMessageId);
-        addAIMessage('Error retrieving the AI response.');
+        addAIMessage('Error retrieving the AI response.', false);
       }
     }
   };

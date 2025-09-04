@@ -7,22 +7,169 @@
       <div v-if="loading" class="loading-dots">
         <span></span><span></span><span></span>
       </div>
-      <div v-else class="rich-text-content" v-html="formattedContent"></div>
+      <div v-else>
+        <div class="rich-text-content" v-html="formattedContent"></div>
+        
+        <!-- Show help banner if this is a help response -->
+        <div v-if="showHelpBanner" class="banner-container">
+          <ChatBanner
+            type="help"
+            title="View Analysis"
+            subtitle="Get detailed help and analysis for your query"
+            button-text="View Analysis"
+            @click="openHelpPanel"
+          />
+        </div>
+      </div>
     </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
+import { useArtifactPanel } from '../composables/useArtifactPanel';
+import ArtifactPanel from './ArtifactPanel.vue';
+import ChatBanner from './ChatBanner.vue';
 
 interface Props {
   content: string;
   loading?: boolean;
+  userQuery?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  loading: false
+  loading: false,
+  userQuery: ''
 });
+
+const { isOpen, currentArtifact, openHelpViewer, closePanel } = useArtifactPanel();
+
+// Check if this response should show a help banner
+const showHelpBanner = computed(() => {
+  return props.userQuery?.toLowerCase().trim() === 'help' && !props.loading;
+});
+
+const openHelpPanel = () => {
+  const helpContent = generateHelpContent();
+  openHelpViewer(helpContent, 'Help & Analysis');
+};
+
+const generateHelpContent = () => {
+  return `
+# Help & Analysis
+
+## Welcome to Your AI Assistant
+
+This AI-powered system helps you with various tasks including document search, data analysis, and intelligent responses.
+
+### Available Commands & Features
+
+#### **Chat Mode**
+- **Ask Questions**: Type natural language questions about your documents or data
+- **Get Insights**: Ask for analysis, summaries, or explanations
+- **Search Content**: Find specific information across your document library
+
+#### **Search Commands**
+- **Document Search**: The AI will search through your uploaded documents to find relevant information
+- **Database Queries**: Ask questions about data in connected databases
+- **Cross-Reference**: Find relationships between different data sources
+
+#### **Special Commands**
+- **help**: Show this help panel with detailed guidance
+- **#company:[name]**: Search for specific company information
+- **#category:[type]**: Filter by document categories
+- **#classification:[level]**: Filter by classification levels
+
+#### **Data Analysis**
+- Ask for **summaries** of complex documents
+- Request **trend analysis** from data sets
+- Get **comparative analysis** between different metrics
+- Generate **reports** based on your data
+
+### Tips for Better Results
+
+#### **Be Specific**
+Instead of: *"Tell me about finances"*  
+Try: *"What are the key financial metrics for Q3 2024?"*
+
+#### **Use Context**
+- Reference specific documents: *"Based on the quarterly report..."*
+- Mention timeframes: *"Show me trends from last month"*
+- Specify data sources: *"From the customer database..."*
+
+#### **Ask Follow-up Questions**
+- *"Can you provide more details about..."*
+- *"How does this compare to..."*
+- *"What are the implications of..."*
+
+### Document Management
+
+#### **Upload Documents**
+1. Click the **+** button in the toolbar
+2. Select files to upload
+3. Choose appropriate classification and categorization
+4. Documents become searchable immediately
+
+#### **Source Selection**
+- Use the **Sources** dropdown to select specific documents
+- Filter by categories, classifications, or data rooms
+- Mix document types for comprehensive analysis
+
+### Data Connections
+
+#### **Database Integration**
+- Connect to external databases through the **Connections** menu
+- Query structured data alongside document content
+- Get real-time insights from live data sources
+
+#### **Supported Formats**
+- **Documents**: PDF, Word, Excel, PowerPoint, Text files
+- **Data**: CSV, JSON, Database connections
+- **Classifications**: Company Confidential, Public, User Confidential
+
+### Troubleshooting
+
+#### **If You're Not Getting Results**
+- Check your **source selection** - ensure relevant documents are selected
+- Try **rephrasing** your question with different keywords
+- Use more **specific terms** rather than general concepts
+- Verify your documents are **properly uploaded** and classified
+
+#### **For Technical Issues**
+- Refresh the page if responses seem slow
+- Check your network connection
+- Contact support if problems persist
+
+### Advanced Features
+
+#### **Bookmarking**
+- Click the bookmark icon on any question to save it
+- Access saved questions from the bookmark menu
+- Build a library of frequently used queries
+
+#### **Model Selection**
+- Choose different AI models for various tasks
+- Some models excel at analysis, others at creative tasks
+- Experiment to find the best model for your needs
+
+### Privacy & Security
+
+- All conversations are **encrypted** and secure
+- Document access is controlled by **your permissions**
+- Classifications ensure **appropriate data handling**
+- Your data is **never shared** with unauthorized parties
+
+---
+
+**Need more specific help?** Try asking about particular features or document types. For example:
+- *"How do I analyze financial statements?"*
+- *"What's the best way to search legal documents?"*
+- *"Show me how to connect to my database"*
+
+*Last updated: ${new Date().toLocaleDateString()}*
+  `;
+};
 
 const formattedContent = computed(() => {
   if (props.loading || !props.content) return '';
@@ -243,6 +390,10 @@ const formattedContent = computed(() => {
     line-height: 1.5;       /* normal spacing */
     color: #333;
 
+}
+
+.banner-container {
+  margin-top: 16px;
 }
 
 

@@ -147,8 +147,7 @@
       <div class="footer-controls">
         <ThemeToggle />
         <div class="user-avatar" @click="toggleProfilePopup">
-          <!-- <img src="/api/placeholder/32/32" alt="User" class="avatar-image" /> -->
-          <div class="status-indicator online"></div>
+          <span class="avatar-initials">{{ userInitials }}</span>
         </div>
       </div>
     </div>
@@ -163,7 +162,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import UserProfilePopup from './UserProfilePopup.vue';
@@ -219,6 +218,28 @@ const handleLogout = () => {
   authStore.logout();
   router.push('/login');
 };
+
+// Computed property for user initials
+const userInitials = computed(() => {
+  const email = authStore.user?.email || authStore.userEmail || 'preeti.kushwaha@automated-data.io';
+  console.log('Current user email for initials:', email);
+  
+  if (email && email.includes('@')) {
+    const namePart = email.split('@')[0];
+    const parts = namePart.split('.');
+    
+    if (parts.length >= 2) {
+      // For emails like preeti.kushwaha@domain.com -> PK
+      const initials = (parts[0][0] + parts[1][0]).toUpperCase();
+      console.log('Generated initials:', initials);
+      return initials;
+    } else {
+      // For emails like preeti@domain.com -> PR
+      return namePart.substring(0, 2).toUpperCase();
+    }
+  }
+  return 'PK'; // Default to PK for Preeti Kushwaha
+});
 
 </script>
 
@@ -435,21 +456,29 @@ const handleLogout = () => {
   width: 40px;
   height: 40px;
   border-radius: 20px;
-  background: var(--surface-container);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 200ms cubic-bezier(0.2, 0.0, 0.38, 0.9);
-  border: 1px solid var(--outline-variant);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(103, 80, 164, 0.2);
+}
+
+.avatar-initials {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .user-avatar:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(103, 80, 164, 0.3);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .avatar-image {
@@ -596,6 +625,10 @@ const handleLogout = () => {
     height: 32px;
   }
   
+  .avatar-initials {
+    font-size: 12px;
+  }
+  
   .status-indicator {
     width: 10px;
     height: 10px;
@@ -676,6 +709,10 @@ const handleLogout = () => {
   .user-avatar {
     width: 36px;
     height: 36px;
+  }
+  
+  .avatar-initials {
+    font-size: 13px;
   }
 }
 </style>

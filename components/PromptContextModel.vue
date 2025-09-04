@@ -175,7 +175,7 @@
                 </td>
                 <td>{{ doc.dataroom || doc.data_room || '-' }}</td>
                 <td>{{ doc.classification || '-' }}</td>
-                <td>{{ doc.name || doc.document_id || '-' }}</td>
+                <td>{{ doc.document_name || doc.name || doc.document_id || '-' }}</td>
                 <td>{{ doc.categorisation || '-' }}</td>
                 <td>{{ doc.loaded || doc.pit || doc.email_when || '-' }}</td>
                 <td>{{ doc.source || doc.document_source || '-' }}</td>
@@ -439,7 +439,7 @@ const filteredDocuments = computed(() => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     docs = docs.filter(doc => 
-      (doc.name || '').toLowerCase().includes(query) ||
+      (doc.document_name || doc.name || '').toLowerCase().includes(query) ||
       (doc.dataroom || doc.data_room || '').toLowerCase().includes(query) ||
       (doc.classification || '').toLowerCase().includes(query) ||
       (doc.categorisation || '').toLowerCase().includes(query) ||
@@ -492,7 +492,7 @@ const getFieldValue = (doc: any, field: string): string => {
     case 'classification':
       return doc.classification || '-';
     case 'name':
-      return doc.name || doc.document_id || '-';
+      return doc.document_name || doc.name || doc.document_id || '-';
     case 'categorisation':
       return doc.categorisation || '-';
     case 'loaded':

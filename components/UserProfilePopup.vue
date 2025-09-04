@@ -5,7 +5,9 @@
         <div class="profile-header">
           <div class="user-info">
             <div class="user-avatar">
-              <!-- <img src="/api/placeholder/48/48" alt="Profile" class="avatar-image" /> -->
+              <div class="avatar-circle">
+                <span class="avatar-initials">{{ userInitials }}</span>
+              </div>
               <div class="status-dot online"></div>
             </div>
             <div class="user-details">
@@ -17,26 +19,37 @@
         </div>
         
         <div class="profile-body">
-          <div class="menu-section">
-            <div class="menu-item">
-              <div class="menu-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="m22 21-3-3m0 0a3 3 0 1 0-6 0 3 3 0 0 0 6 0z"/>
-                </svg>
-              </div>
-              <div class="menu-content">
-                <span class="menu-title">Profile Settings</span>
-                <span class="menu-subtitle">Manage your account</span>
-              </div>
-              <div class="menu-arrow">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <!-- User Information Section -->
+          <div class="user-info-section">
+            <div class="info-item">
+              <div class="info-label">Email</div>
+              <div class="info-value">{{ userDisplayEmail }}</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Organization</div>
+              <div class="info-value">{{ selectedOrganization || userProfileStore.organization }}</div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">Department</div>
+              <div class="info-value">{{ userProfileStore.department }}</div>
+            </div>
+            
+            <div class="info-item clickable" @click="handleServiceStatusClick">
+              <div class="info-label">Service Status</div>
+              <div class="info-value status-display">
+                <div class="status-dot" :class="serviceStatusClass"></div>
+                <span>{{ serviceStatusText }}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" class="status-arrow">
                   <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
                 </svg>
               </div>
             </div>
-            
+          </div>
+
+          <!-- Organizations Selection (expandable) -->
+          <div class="menu-section">
             <div class="menu-item" @click="handleOrganizationClick" :class="{ 'loading': loadingOrganizations }">
               <div class="menu-icon">
                 <svg v-if="!loadingOrganizations" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -47,8 +60,8 @@
                 <div v-else class="loading-spinner"></div>
               </div>
               <div class="menu-content">
-                <span class="menu-title">Organizations</span>
-                <span class="menu-subtitle">{{ selectedOrganization || 'Select organization' }}</span>
+                <span class="menu-title">Change Organization</span>
+                <span class="menu-subtitle">Select different organization</span>
               </div>
               <div class="menu-arrow">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -95,36 +108,9 @@
                 </div>
               </div>
             </div>
-            
-            <div class="menu-item">
-              <div class="menu-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
-              </div>
-              <div class="menu-content">
-                <span class="menu-title">Preferences</span>
-                <span class="menu-subtitle">Theme, notifications & more</span>
-              </div>
-              <div class="menu-arrow">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-                </svg>
-              </div>
-            </div>
           </div>
           
-          <div class="status-section">
-            <div class="status-item">
-              <div class="status-indicator">
-                <div class="status-dot online"></div>
-                <span class="status-text">System Status: Online</span>
-              </div>
-              <div class="status-badge online">Active</div>
-            </div>
-          </div>
-          
+          <!-- Actions Section -->
           <div class="actions-section">
             <button class="help-button">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -132,7 +118,7 @@
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
-              <span>Help & Support</span>
+              <span>Help</span>
             </button>
             
             <button class="logout-button" @click="handleLogout">
@@ -147,12 +133,20 @@
         </div>
       </div>
     </div>
+
+    <!-- Service Status Popup -->
+    <ServiceStatusPopup 
+      :is-open="showServiceStatusPopup" 
+      @close="closeServiceStatusPopup" 
+    />
   </Teleport>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useAuthStore } from '../stores/auth';
+import { useUserProfileStore } from '../stores/userProfile';
+import ServiceStatusPopup from './ServiceStatusPopup.vue';
 
 interface Props {
   isOpen: boolean;
@@ -167,6 +161,7 @@ interface Organization {
 
 const props = defineProps<Props>();
 const authStore = useAuthStore();
+const userProfileStore = useUserProfileStore();
 
 const emit = defineEmits(['close', 'logout', 'organizationSelected']);
 
@@ -177,6 +172,9 @@ const loadingOrganizations = ref(false);
 const organizationsError = ref('');
 const selectedOrgId = ref<number | null>(null);
 const selectedOrganization = ref<string>('');
+
+// Service Status Popup state
+const showServiceStatusPopup = ref(false);
 
 const closePopup = () => {
   emit('close');
@@ -288,9 +286,47 @@ const selectOrganization = (org: Organization) => {
   console.log(`✅ Successfully selected organization: ${org.name} (ID: ${org.org_id})`);
 };
 
+// Service Status handlers
+const handleServiceStatusClick = () => {
+  showServiceStatusPopup.value = true;
+};
+
+const closeServiceStatusPopup = () => {
+  showServiceStatusPopup.value = false;
+};
+
 // Computed property to get user email from auth store or props
 const userDisplayEmail = computed(() => {
-  return authStore.user?.email || props.userEmail || 'user@example.com';
+  return authStore.user?.email || props.userEmail || userProfileStore.userEmail;
+});
+
+// Computed properties for service status
+const serviceStatusClass = computed(() => {
+  switch (userProfileStore.systemHealth) {
+    case 'healthy': return 'online';
+    case 'degraded': return 'maintenance';
+    case 'error': return 'offline';
+    default: return 'offline';
+  }
+});
+
+const serviceStatusText = computed(() => {
+  return userProfileStore.systemHealthText;
+});
+
+// Computed property for user initials
+const userInitials = computed(() => {
+  const email = userDisplayEmail.value;
+  if (email) {
+    const namePart = email.split('@')[0];
+    const parts = namePart.split('.');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    } else {
+      return namePart.substring(0, 2).toUpperCase();
+    }
+  }
+  return 'U';
 });
 </script>
 
@@ -346,10 +382,27 @@ const userDisplayEmail = computed(() => {
   position: relative;
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
+}
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+}
+
+.avatar-initials {
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .avatar-image {
@@ -412,6 +465,78 @@ const userDisplayEmail = computed(() => {
 
 .profile-body {
   padding: 16px 0;
+}
+
+/* User Information Section */
+.user-info-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 12px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.info-item:not(:last-child) {
+  border-bottom: 1px solid #f8fafc;
+}
+
+.info-item.clickable {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.info-item.clickable:hover {
+  background: #f8fafc;
+  border-radius: 4px;
+}
+
+.info-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  min-width: 80px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 500;
+  text-align: right;
+  flex: 1;
+}
+
+.status-display {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.status-display .status-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-display .status-dot.maintenance {
+  background: #f59e0b;
+}
+
+.status-arrow {
+  color: #9ca3af;
+  transition: all 0.2s;
+  margin-left: 8px;
+}
+
+.info-item.clickable:hover .status-arrow {
+  color: #6b7280;
+  transform: translateX(2px);
 }
 
 .menu-section {

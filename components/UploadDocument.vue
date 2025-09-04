@@ -119,7 +119,12 @@
 
         <!-- Connections Tab -->
         <div v-if="activeTab === 'connections'" class="connections-tab">
-          <p class="coming-soon">Connections feature coming soon...</p>
+          <CreateConnectionModal 
+            :isOpen="activeTab === 'connections'" 
+            :embedded="true"
+            @close="handleConnectionModalClose"
+            @saved="handleConnectionCreated" 
+          />
         </div>
       </div>
     </div>
@@ -128,6 +133,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import CreateConnectionModal from './CreateConnectionModal.vue';
 
 interface Props {
   isVisible: boolean;
@@ -138,6 +144,7 @@ const emit = defineEmits<{
   close: [];
   fileUploaded: [file: File];
   showClassification: [data: { file: File; fileId?: string }];
+  connectionCreated: [connection: any];
 }>();
 
 const activeTab = ref<'upload' | 'connections'>('upload');
@@ -266,6 +273,18 @@ const uploadFile = async () => {
   } finally {
     isUploading.value = false;
   }
+};
+
+const handleConnectionCreated = (connection: any) => {
+  // Forward the connection created event to parent
+  emit('connectionCreated', connection);
+  // Optionally close the modal after successful connection creation
+  // closeModal();
+};
+
+const handleConnectionModalClose = () => {
+  // Switch back to upload tab when connection modal closes
+  activeTab.value = 'upload';
 };
 </script>
 
@@ -519,14 +538,7 @@ const uploadFile = async () => {
 }
 
 .connections-tab {
-  text-align: center;
-  padding: 40px 20px;
-}
-
-.coming-soon {
-  font-size: 16px;
-  color: var(--on-surface-variant, #666);
-  margin: 0;
+  padding: 0;
 }
 
 /* Mobile Responsive Styles */
